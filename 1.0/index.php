@@ -29,5 +29,28 @@
       $dbh->getQueuePosition($UserId);
    });
 
+   /*
+    * url for this function: http://54.191.98.90/api/1.0/getAllDoctors
+    * This will query the Doctors table and return all doctors
+    */
+   $app->get('/getAllDoctors', function() {
+      $dbh = new DbHandler();
+      
+      $dbh->getAllDoctors();
+   });
+
+   /*
+    * url for this function: http://54.191.98.90/api/1.0/check/$Username/$Password
+    * Replace $Username with Username to search and $Password with Password to search
+    * This will query the Users table and return a user if exists, 
+    * 'No Such Users Found' otherwise.
+    */
+   $app->get('/check/:Username/:Password', function($Username, $Password) {
+      
+      $dbh = new DbHandler();
+ 
+      $dbh->check($Username, $Password);
+   });
+
    $app->run();
 ?>
