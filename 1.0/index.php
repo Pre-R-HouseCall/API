@@ -23,26 +23,22 @@
       print($paramValue);      
    });
 
-   /*
-    *  url for this function: http://54.191.98.90/api/1.0/getQueuePosition/1
-    *  UserId is the parameter, in this example UserId = 1 
-    *  the url parameter for "/getQueuePosition/:UserId" is "UserId" and 
-    *   should match the function parameter "$UserId" for clarity
-    */
-   $app->get('/getQueuePosition/:UserId', function($UserId) {
+   $app->get('/getQueuePosition/:DoctorId/:UserId', function($DoctorId, $UserId) {
       
       //helper class that does CRUD (Create, Read, Update, Delete) operations
       $dbh = new DbHandler();
 
-      $dbh->getQueuePosition($UserId);
+      $dbh->getQueuePosition($DoctorId, $UserId);
    });
 
-   $app->get('/getQueuePositionNew/:DoctorId/:UserId', function($DoctorId, $UserId) {
-      
-      //helper class that does CRUD (Create, Read, Update, Delete) operations
+   /*
+    * url for this function: http://54.191.98.90/api/1.0/getPatients/$DoctorId
+    * This will query the Froms table and return all users in the doctor's queue
+    */
+   $app->get('/getPatients/:DoctorId', function($DoctorId) {
       $dbh = new DbHandler();
-
-      $dbh->getQueuePositionNew($DoctorId, $UserId);
+      
+      $dbh->getPatients($DoctorId);
    });
 
    /*
@@ -56,16 +52,44 @@
    });
 
    /*
-    * url for this function: http://54.191.98.90/api/1.0/check/$Username/$Password
+    * url for this function: http://54.191.98.90/api/1.0/checkUser/$Username/$Password
     * Replace $Username with Username to search and $Password with Password to search
     * This will query the Users table and return a user if exists, 
     * 'No Such Users Found' otherwise.
     */
-   $app->get('/check/:Email/:Password', function($Email, $Password) {
+   $app->get('/checkUser/:Email/:Password', function($Email, $Password) {
       
       $dbh = new DbHandler();
  
-      $dbh->check($Email, $Password);
+      $dbh->checkUser($Email, $Password);
+   });
+
+   /*
+    * url for this function: http://54.191.98.90/api/1.0/checkDoctor/$Username/$Password
+    * Replace $Username with Username to search and $Password with Password to search
+    * This will query the Users table and return a user if exists, 
+    * 'No Such Users Found' otherwise.
+    */
+   $app->get('/checkDoctor/:Email/:Password', function($Email, $Password) {
+      
+      $dbh = new DbHandler();
+ 
+      $dbh->checkDoctor($Email, $Password);
+   });
+
+   /*
+    * url for this function: 
+    * http://54.191.98.90/api/1.0/updateAvailability/$DoctorId/$Availability
+    * Replace $DoctorId with DoctorId to search and 
+    * Availability with Availability to set
+    * This will query the Doctor table and return a user if exists, 
+    * 'No Such Users Found' otherwise.
+    */
+   $app->get('/updateAvailability/:DoctorId/:Availability', function($DoctorId, $Availability) {
+      
+      $dbh = new DbHandler();
+ 
+      $dbh->updateAvailability($DoctorId, $Availability);
    });
 
    $app->get('/addUser/:name/:email/:password/:phoneNum/:address/:city/:state/:zip', function($name, $email, $password, $phoneNum, $address, $city, $state, $zip) {
@@ -81,12 +105,12 @@
     * 
     * This will query the Forms table and add the specified form
     */
-   $app->get('/addForm/:doctorId/:userId/:name/:email/:number/:symptoms/:lat/:long/:street/:city/:state/:dateTime', 
-      function($doctorId, $userId, $name, $email, $number, $symptoms, $lat, $long, $street, $city, $state, $dateTime) {
+   $app->get('/addForm/:doctorId/:userId/:name/:email/:number/:symptoms/:lat/:long/:street/:city/:state/:dateTime/:tag', 
+      function($doctorId, $userId, $name, $email, $number, $symptoms, $lat, $long, $street, $city, $state, $dateTime, $tag) {
       
       $dbh = new DbHandler();
 
-      $dbh->addForm($doctorId, $userId, $name, $email, $number, $symptoms, $lat, $long, $street, $city, $state, $dateTime); 
+      $dbh->addForm($doctorId, $userId, $name, $email, $number, $symptoms, $lat, $long, $street, $city, $state, $dateTime, $tag); 
 
    });
 

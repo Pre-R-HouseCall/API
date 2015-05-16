@@ -10,35 +10,12 @@
       }
 
       /*
-       *  Read operation.  Queries the WaitingRoom table using the UserId
-       *  to get the QueuePosition.
-       *
-       *  Returns the QueuePosition encode as JSON
-       */
-      function getQueuePosition($UserId) {
-
-         $result = mysqli_query($this->server_connection, 
-          "SELECT QueuePosition FROM WaitingRoom WHERE UserId = $UserId");
-
-         if ($result->num_rows > 1) {
-            echo "Error: Mutiple users with same ID";
-         }
-         else if ($result->num_rows == 0) {
-            echo "Error: No user has this ID";
-         }
-         else {         
-            $queuePosition = $result->fetch_object();
-            echo json_encode($queuePosition);
-         }
-      }
-
-      /*
        * Read operation. Queries the Forms table using the DoctorId and UserId
        * to get the Queue Position.
        *
        * Returns the DoctorId, UserId, and Position encode as JSON
        */
-      function getQueuePositionNew($DoctorId, $UserId) {
+      function getQueuePosition($DoctorId, $UserId) {
          // local sql variable for row index
          $set_query = "SET @Index = 0";
          mysqli_query($this->server_connection, $set_query);
@@ -53,7 +30,7 @@
             $queuePosition = $result->fetch_object();
             echo json_encode($queuePosition);
          }                  
-      } 
+      }
 
       /* Read operation.  Queries the Doctors table for all Doctors.  
        *
@@ -72,6 +49,23 @@
          echo json_encode($doctors);
       }
 
+      /* Read operation. Queries the Forms table to find all Users in the Doctors Queue
+       *
+       * Returns all the users in JSON format
+       */
+      function getPatients($DoctorId) {
+         
+         $result = mysqli_query($this->server_connection,
+          "SELECT * FROM Forms WHERE DoctorId = '$DoctorId' ORDER BY DateTime ASC");
+         
+         $users = array();
+         while($row = mysqli_fetch_assoc($result)) 
+         {
+            $users[] = $row;
+         }
+         echo json_encode($users);
+      }
+
       /*
        * Read operation. Queries the Users table to check whether or not
        * the specified user exists. 
@@ -79,7 +73,7 @@
        * If the user exists, return the user.
        * If the user does not exist, return "No Such User Found"
        */
-      function check($Email, $Password) {
+      function checkUser($Email, $Password) {
          
          $result = mysqli_query($this->server_connection,
           "SELECT * FROM Users WHERE Email = '$Email' AND Password = '$Password'");
@@ -92,6 +86,46 @@
          }
       }
 
+      /*
+       * Read operation. Queries the Users table to check whether or not
+       * the specified user exists. 
+       *
+       * If the user exists, return the user.
+       * If the user does not exist, return "No Such User Found"
+       */
+      function checkDoctor($Email, $Password) {
+         
+         $result = mysqli_query($this->server_connection,
+          "SELECT * FROM Doctors WHERE Email = '$Email' AND Password = '$Password'");
+ 
+         if ($result->num_rows == 0)
+            echo "No Such User Found";
+         else {
+            $foundUser = $result->fetch_object();
+            echo json_encode($foundUser);
+         }
+      }
+
+      /*
+       * Update operation. Queries the Doctor table to check whether or not
+       * the specified user exists. 
+       *
+       * If the user exists, update the availablity.
+       * If the user does not exist, return "No Such User Found"
+       */
+      function updateAvailability($DoctorId, $Availability) {
+         
+         $check = mysqli_query($this->server_connection,
+          "SELECT * FROM Doctors WHERE DoctorId = '$DoctorId'");
+         if ($check->num_rows == 0)
+            echo "No Such User Found";
+         else {
+            $result = mysqli_query($this->server_connection,
+             "UPDATE Doctors SET Availability = '$Availability'  WHERE DoctorId = '$DoctorId'");
+            echo "Update Successful";
+         }
+      }
+      
       //this function assumes it is given all of the corrrect information
       //the apps need to ensure that all of the required info is sent
       function addUser($name, $email, $password, $phoneNum, $address, $city, $state, $zip) {
@@ -125,8 +159,8 @@
          }
       }
 
-      function addForm($doctorId, $userId, $name, $email, $number, $symptoms, $lat, $long, $street, $city, $state, $dateTime) {
-         $insert_query = "INSERT into Forms (DoctorID, UserID, Name, Email, Number, Symptoms, Latitude, Longitude, StreetAddress, City, State, DateTime) values('$doctorId', '$userId', '$name', '$email', '$number', '$symptoms', '$lat', '$long', '$street','$city', '$state', '$dateTime')"; 
+      function addForm($doctorId, $userId, $name, $email, $number, $symptoms, $lat, $long, $street, $city, $state, $dateTime, $tag) {
+         $insert_query = "INSERT into Forms (DoctorID, UserID, Name, Email, Number, Symptoms, Latitude, Longitude, StreetAddress, City, State, DateTime) values('$doctorId', '$userId', '$name', '$email', '$number', '$symptoms', '$lat', '$long', '$street','$city', '$state', '$dateTime', '$tag')"; 
          $insert_result = mysqli_query($this->server_connection,$insert_query);
          echo "Successful Insert";
       }
