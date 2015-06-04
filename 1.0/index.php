@@ -119,10 +119,10 @@
     * Replace $UserId with UserId to search
     * This will query the Forms table and delete the form
     */
-   $app->get('/deleteForm/:UserId', function($UserId) {
+   $app->get('/deleteForm/:UserId/:DateTime', function($UserId, $DateTime) {
       $dbh = new DbHandler();
 
-      $dbh->deleteForm($UserId);
+      $dbh->deleteForm($UserId, $DateTime);
    });
 
    $app->get('/checkFormExists/:UserId', function($UserId) {
@@ -131,5 +131,10 @@
       $dbh->checkFormExists($UserId);
    });
 
+   $app->get('/updateUserInformation/:UserId/:Name/:Email/:PhoneNum/:Password', function($UserId, $Name, $Email, $PhoneNum, $Password) {
+      $dbh = new DbHandler();
+
+      $dbh->updateUserInformation($UserId, $Name, $Email, $PhoneNum, $Password);
+   });
    $app->run();
 ?>

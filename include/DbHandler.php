@@ -165,17 +165,17 @@
          echo "Successful Insert";
       }
       
-      function deleteForm($UserId) {
-         $check_exists_query = "SELECT * FROM Forms WHERE UserId = '$UserId'";
+      function deleteForm($UserId, $DateTime) {
+         $check_exists_query = "SELECT * FROM Forms WHERE UserId = '$UserId' AND DateTime = '$DateTime'";
          $check_exists_result = mysqli_query($this->server_connection, $check_exists_query);
          
          if ($check_exists_result->num_rows == 0)
             echo "Form Does Not Exist";
          else {
-            $delete_query = "DELETE FROM Forms WHERE UserId = '$UserId'";
+            $delete_query = "DELETE FROM Forms WHERE UserId = '$UserId' AND DateTime = '$DateTime'";
             $delete_result = mysqli_query($this->server_connection, $delete_query);
          
-            $check_query = "SELECT * FROM Forms WHERE UserId = '$UserId'";
+            $check_query = "SELECT * FROM Forms WHERE UserId = '$UserId' AND DateTime = '$DateTime'";
             $check_result = mysqli_query($this->server_connection, $check_query);
          
             if ($check_result->num_rows == 0)
@@ -194,6 +194,12 @@
             echo "No";
          else
             echo "Yes";
+      }
+
+      function updateUserInformation($UserId, $Name, $Email, $PhoneNum, $Password) {
+         $update_query = "UPDATE Users SET Name = '$Name', Email = '$Email', PhoneNumber = '$PhoneNum', Password = '$Password' WHERE UserId = '$UserId'";
+         $update_result = mysqli_query($this->server_connection, $update_query);
+         
       }
    }
 ?>
